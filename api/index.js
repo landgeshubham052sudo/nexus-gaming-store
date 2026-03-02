@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -9,6 +10,9 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from the public directory (for local dev)
+app.use(express.static(path.join(__dirname, '../public')));
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -35,12 +39,11 @@ const productSchema = new mongoose.Schema({
     is_new_arrival: Boolean
 });
 
-// Avoid model recompilation error on Vercel
 const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 
 // Routes
-// Note: In Vercel, this function handles requests prefix with /api
-// So /api/products will hit this route if we use app.get('/products')
+// Note: In Vercel, this function handles requests prefixed with /api
+// If the request is /api/products, Express sees it as /products
 app.get('/products', async (req, res) => {
     try {
         const products = await Product.find();
@@ -50,8 +53,15 @@ app.get('/products', async (req, res) => {
     }
 });
 
+// Fallback for non-API routes to serve index.html (for local dev)
+app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+        res.sendFile(path.join(__dirname, '../public/index.html'));
+    }
+});
+
 // Start Server (only for local dev)
-if (process.env.NODE_ENV !== 'production' && require.main === module) {
+if (require.main === module) {
     app.listen(PORT, () => {
         console.log(`🚀 Server running on http://localhost:${PORT}`);
     });
