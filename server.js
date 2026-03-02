@@ -10,6 +10,12 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 app.use('/assets', express.static('assets'));
+app.use(express.static('.')); // Serve static files from root (app.js, style.css, etc.)
+
+// Routes
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)

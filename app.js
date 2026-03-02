@@ -4,7 +4,9 @@
 
 // ── PRODUCT DATA ──────────────────────────────────────────
 let PRODUCTS = [];
-const API_URL = 'http://localhost:5000/api';
+const API_URL = window.location.origin === 'null' || window.location.origin.includes('file://')
+    ? 'http://localhost:5000/api'
+    : `${window.location.origin}/api`;
 
 // ── STATE ─────────────────────────────────────────────────
 let cart = JSON.parse(localStorage.getItem('nexus_cart') || '[]');
