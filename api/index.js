@@ -6,18 +6,9 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const path = require('path');
-
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
-app.use(express.static(__dirname)); // Serve static files from root
-
-// Routes
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -29,7 +20,6 @@ mongoose.connect(MONGODB_URI || 'mongodb://127.0.0.1:27017/nexus_store')
     .then(() => console.log('✅ Connected to MongoDB'))
     .catch(err => {
         console.error('❌ MongoDB Connection Error:', err.message);
-        console.error('Hint: If on Vercel, ensure MONGODB_URI is set in Environment Variables.');
     });
 
 // Product Schema
@@ -45,10 +35,13 @@ const productSchema = new mongoose.Schema({
     is_new_arrival: Boolean
 });
 
-const Product = mongoose.model('Product', productSchema);
+// Avoid model recompilation error on Vercel
+const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 
 // Routes
-app.get('/api/products', async (req, res) => {
+// Note: In Vercel, this function handles requests prefix with /api
+// So /api/products will hit this route if we use app.get('/products')
+app.get('/products', async (req, res) => {
     try {
         const products = await Product.find();
         res.json(products);
@@ -57,8 +50,8 @@ app.get('/api/products', async (req, res) => {
     }
 });
 
-// Start Server
-if (process.env.NODE_ENV !== 'production') {
+// Start Server (only for local dev)
+if (process.env.NODE_ENV !== 'production' && require.main === module) {
     app.listen(PORT, () => {
         console.log(`🚀 Server running on http://localhost:${PORT}`);
     });
