@@ -4,9 +4,9 @@
 
 // ── PRODUCT DATA ──────────────────────────────────────────
 let PRODUCTS = [];
-const API_URL = window.location.origin === 'null' || window.location.origin.includes('file://')
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:5000/api'
-    : `${window.location.origin}/api`;
+    : '/api';
 
 // ── STATE ─────────────────────────────────────────────────
 let cart = JSON.parse(localStorage.getItem('nexus_cart') || '[]');
@@ -26,12 +26,26 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function initApp() {
+    const grid = document.getElementById('productsGrid');
+    if (grid) grid.innerHTML = '<div class="loading-msg">Connecting to NEXUS Servers...</div>';
+
     try {
         const res = await fetch(`${API_URL}/products`);
+        if (!res.ok) throw new Error(`Server responded with ${res.status}`);
         PRODUCTS = await res.json();
         renderProducts();
     } catch (err) {
         console.error('Failed to fetch products:', err);
+        if (grid) {
+            grid.innerHTML = `
+                <div class="error-msg">
+                    <div style="font-size:3rem;margin-bottom:1rem;">⚠️</div>
+                    <h3>Connection Failed</h3>
+                    <p>Unable to reach the NEXUS product database.</p>
+                    <p style="font-size:0.8rem;opacity:0.7;margin-top:0.5rem;">Error: ${err.message}</p>
+                    <button class="btn btn-primary" style="margin-top:1.5rem;padding:8px 20px;" onclick="initApp()">Try Again</button>
+                </div>`;
+        }
         toast('Offline Mode: Load products failed');
     }
 }
@@ -104,9 +118,14 @@ function renderProducts(cat = 'all') {
     const grid = document.getElementById('productsGrid');
     if (!grid) return;
 
-    if (!Array.isArray(PRODUCTS)) {
-        console.error('PRODUCTS is not an array:', PRODUCTS);
-        grid.innerHTML = '<div class="error-msg">Failed to load products. Please check the backend.</div>';
+    if (!Array.isArray(PRODUCTS) || PRODUCTS.length === 0) {
+        grid.innerHTML = `
+            <div class="error-msg">
+                <div style="font-size:3rem;margin-bottom:1rem;">📦</div>
+                <h3>No Products Found</h3>
+                <p>The product catalog is currently empty.</p>
+                <button class="btn btn-primary" style="margin-top:1.5rem;padding:8px 20px;" onclick="initApp()">Refresh Catalog</button>
+            </div>`;
         return;
     }
 

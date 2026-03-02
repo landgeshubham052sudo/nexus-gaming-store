@@ -42,11 +42,18 @@ const productSchema = new mongoose.Schema({
 const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 
 // Routes
-// Note: In Vercel, this function handles requests prefixed with /api
-// If the request is /api/products, Express sees it as /products
-app.get('/products', async (req, res) => {
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+        timestamp: new Date()
+    });
+});
+app.get('/api/products', async (req, res) => {
+    console.log(`[${new Date().toISOString()}] GET /api/products`);
     try {
         const products = await Product.find();
+        console.log(`[${new Date().toISOString()}] Returned ${products.length} products`);
         res.json(products);
     } catch (err) {
         res.status(500).json({ message: err.message });
