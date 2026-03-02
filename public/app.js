@@ -4,9 +4,8 @@
 
 // ── PRODUCT DATA ──────────────────────────────────────────
 let PRODUCTS = [];
-const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? 'http://localhost:5000/api'
-    : '/api';
+const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname) || window.location.protocol === 'file:';
+const API_URL = isLocal ? 'http://localhost:5000/api' : '/api';
 
 // ── STATE ─────────────────────────────────────────────────
 let cart = JSON.parse(localStorage.getItem('nexus_cart') || '[]');
