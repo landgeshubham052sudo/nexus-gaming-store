@@ -12,6 +12,14 @@
             "dest": "/assets/$1"
         },
         {
+            "src": "/(style\\.css|app\\.js|index\\.html)",
+            "dest": "/$1"
+        },
+        {
+            "src": "/api/(.*)",
+            "dest": "server.js"
+        },
+        {
             "src": "/(.*)",
             "dest": "server.js"
         }
