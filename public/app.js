@@ -4,8 +4,8 @@
 
 // ── PRODUCT DATA ──────────────────────────────────────────
 let PRODUCTS = [];
-const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname) || window.location.protocol === 'file:';
-const API_URL = isLocal ? 'http://localhost:5000/api' : '/api';
+const isLocalDev = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:');
+const API_URL = isLocalDev ? 'http://localhost:5000/api' : '/api';
 
 // ── STATE ─────────────────────────────────────────────────
 let cart = JSON.parse(localStorage.getItem('nexus_cart') || '[]');
@@ -36,12 +36,14 @@ async function initApp() {
     } catch (err) {
         console.error('Failed to fetch products:', err);
         if (grid) {
+            const currentFetchUrl = `${API_URL}/products`;
             grid.innerHTML = `
                 <div class="error-msg">
                     <div style="font-size:3rem;margin-bottom:1rem;">⚠️</div>
                     <h3>Connection Failed</h3>
                     <p>Unable to reach the NEXUS product database.</p>
-                    <p style="font-size:0.8rem;opacity:0.7;margin-top:0.5rem;">Error: ${err.message}</p>
+                    <p style="font-size:0.8rem;opacity:0.7;margin-top:0.5rem;">Target: ${currentFetchUrl}</p>
+                    <p style="font-size:0.8rem;opacity:0.7;">Error: ${err.message}</p>
                     <button class="btn btn-primary" style="margin-top:1.5rem;padding:8px 20px;" onclick="initApp()">Try Again</button>
                 </div>`;
         }
