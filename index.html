@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS — Gaming Store</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+
+<body>
+
+    <!-- ══════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════ -->
+    <nav class="nav">
+        <div class="nav-logo" onclick="goHome()">Nexus<span>.</span></div>
+        <ul class="nav-links">
+            <li><a id="nl-home" class="act" onclick="goHome()">Home</a></li>
+            <li><a onclick="goShop('all')">All Products</a></li>
+            <li><a onclick="goShop('pc-games')">PC Games</a></li>
+            <li><a onclick="goShop('consoles')">Consoles</a></li>
+            <li><a onclick="goShop('playstation')">PlayStation</a></li>
+            <li><a onclick="goShop('ps-games')">PS Games</a></li>
+        </ul>
+        <div class="nav-spacer"></div>
+        <div class="nav-right">
+            <div class="nav-user" id="navUser">
+                <div class="avatar" id="navAvatar">?</div>
+                <span id="navName"></span>
+            </div>
+            <button class="btn btn-ghost" id="authBtn" onclick="openModal()">Sign In</button>
+            <button class="cart-btn" onclick="openCart()">
+                🛒 Cart <span class="cart-badge" id="cartBadge">0</span>
+            </button>
+            <button class="nav-hamburger" onclick="toggleMobileMenu()">☰</button>
+        </div>
+    </nav>
+
+    <!-- Mobile Dropdown Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a onclick="goHome()">Home</a>
+        <a onclick="goShop('all')">All Products</a>
+        <a onclick="goShop('pc-games')">PC Games</a>
+        <a onclick="goShop('consoles')">Consoles</a>
+        <a onclick="goShop('playstation')">PlayStation</a>
+        <a onclick="goShop('ps-games')">PS Games</a>
+    </div>
+
+    <!-- Global UI -->
+    <div class="toast" id="toast"></div>
+    <div class="drawer-bg" id="drawerBg" onclick="closeCart()"></div>
+
+
+    <!-- ══════════════════════════════════════
+     CART DRAWER
+═══════════════════════════════════════ -->
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="drawer-head">
+            <h2>Shopping Cart</h2>
+            <button class="drawer-close" onclick="closeCart()">✕</button>
+        </div>
+        <div class="drawer-items" id="drawerItems"></div>
+        <div id="drawerFoot"></div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════
+     AUTH MODAL
+═══════════════════════════════════════ -->
+    <div class="modal-bg" id="modalBg">
+        <div class="modal" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <h2>Welcome back</h2>
+            <p class="modal-sub">Sign in or create a new account</p>
+            <div class="modal-tabs">
+                <button class="modal-tab active" id="tabLogin" onclick="switchTab('login')">Sign In</button>
+                <button class="modal-tab" id="tabSignup" onclick="switchTab('signup')">Create Account</button>
+            </div>
+
+            <form class="auth-form active" id="formLogin" onsubmit="doLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input class="form-input" type="email" id="liEmail" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input class="form-input" type="password" id="liPass" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full" style="padding:11px;">Sign In</button>
+                <div class="divider">or</div>
+                <button type="button" class="btn-google" onclick="googleLogin()">🌐 Continue with Google</button>
+            </form>
+
+            <form class="auth-form" id="formSignup" onsubmit="doSignup(event)">
+                <div class="form-group">
+                    <label class="form-label">Display Name</label>
+                    <input class="form-input" type="text" id="suName" placeholder="GamerTag" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input class="form-input" type="email" id="suEmail" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input class="form-input" type="password" id="suPass" placeholder="Min. 8 characters" minlength="8"
+                        required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full" style="padding:11px;">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════
+     HOME PAGE
+═══════════════════════════════════════ -->
+    <div class="page active" id="pageHome">
+        <div class="hero">
+            <div class="hero-left">
+                <div class="hero-eyebrow">New Arrivals — Spring 2025</div>
+                <h1 class="hero-h1">Your next great<br>game starts <em>here.</em></h1>
+                <p class="hero-p">Browse thousands of titles across PC, PlayStation, Xbox, and more. Fast delivery,
+                    secure checkout, best prices.</p>
+                <div class="hero-btns">
+                    <button class="btn btn-primary" onclick="goShop('all')">Browse Store</button>
+                    <button class="btn btn-ghost" onclick="goShop('new-releases')">New Releases →</button>
+                </div>
+                <div class="hero-stats">
+                    <div>
+                        <div class="stat-num">500+</div>
+                        <div class="stat-label">Products</div>
+                    </div>
+                    <div>
+                        <div class="stat-num">50k+</div>
+                        <div class="stat-label">Happy Players</div>
+                    </div>
+                    <div>
+                        <div class="stat-num">4.9 ★</div>
+                        <div class="stat-label">Avg. Rating</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-right">
+                <div class="hero-card" onclick="goShop('pc-games')">
+                    <span class="hc-icon">🖥️</span>
+                    <div class="hc-name">PC Games</div>
+                    <div class="hc-meta"><span class="hc-count">128 products</span><span class="hc-arrow">→</span></div>
+                </div>
+                <div class="hero-card" onclick="goShop('consoles')">
+                    <span class="hc-icon">🎮</span>
+                    <div class="hc-name">Consoles</div>
+                    <div class="hc-meta"><span class="hc-count">45 products</span><span class="hc-arrow">→</span></div>
+                </div>
+                <div class="hero-card" onclick="goShop('playstation')">
+                    <span class="hc-icon">🔵</span>
+                    <div class="hc-name">PlayStation</div>
+                    <div class="hc-meta"><span class="hc-count">87 products</span><span class="hc-arrow">→</span></div>
+                </div>
+                <div class="hero-card" onclick="goShop('ps-games')">
+                    <span class="hc-icon">💿</span>
+                    <div class="hc-name">PS Games</div>
+                    <div class="hc-meta"><span class="hc-count">214 products</span><span class="hc-arrow">→</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════
+     SHOP PAGE
+═══════════════════════════════════════ -->
+    <div class="page" id="pageShop">
+        <div class="shop-wrap">
+            <div class="shop-top">
+                <h1 class="shop-title" id="shopTitle">All Products</h1>
+                <div class="search-wrap">
+                    <span class="search-icon">🔍</span>
+                    <input class="search-input" id="searchInput" type="text" placeholder="Search products…"
+                        oninput="renderProducts()">
+                </div>
+            </div>
+
+            <div class="cat-tabs">
+                <button class="cat-tab active" onclick="setTab('all',this)">All</button>
+                <button class="cat-tab" onclick="setTab('pc-games',this)">PC Games</button>
+                <button class="cat-tab" onclick="setTab('consoles',this)">Consoles</button>
+                <button class="cat-tab" onclick="setTab('playstation',this)">PlayStation</button>
+                <button class="cat-tab" onclick="setTab('ps-games',this)">PS Games</button>
+                <button class="cat-tab" onclick="setTab('new-releases',this)">New</button>
+            </div>
+
+            <div class="shop-layout">
+                <aside class="sidebar">
+                    <div class="filter-title">Filters</div>
+                    <div class="filter-section">
+                        <span class="filter-section-label">Category</span>
+                        <label class="filter-option"><input type="checkbox" value="pc-games"
+                                onchange="renderProducts()"> PC Games</label>
+                        <label class="filter-option"><input type="checkbox" value="consoles"
+                                onchange="renderProducts()"> Consoles</label>
+                        <label class="filter-option"><input type="checkbox" value="playstation"
+                                onchange="renderProducts()"> PlayStation</label>
+                        <label class="filter-option"><input type="checkbox" value="ps-games"
+                                onchange="renderProducts()"> PS Games</label>
+                    </div>
+                    <div class="filter-section">
+                        <span class="filter-section-label">Max Price</span>
+                        <input type="range" class="price-slider" min="0" max="55000" value="55000" step="500"
+                            oninput="updateMaxPrice(this.value)">
+                        <div class="price-range-label">
+                            <span>₹0</span><span id="priceLabel">₹55,000</span>
+                        </div>
+                    </div>
+                    <div class="filter-section">
+                        <span class="filter-section-label">Availability</span>
+                        <label class="filter-option"><input type="checkbox" value="new" onchange="renderProducts()"> New
+                            Releases</label>
+                        <label class="filter-option"><input type="checkbox" value="sale" onchange="renderProducts()"> On
+                            Sale</label>
+                    </div>
+                </aside>
+                <div class="products-grid" id="productsGrid"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════
+     CHECKOUT PAGE
+═══════════════════════════════════════ -->
+    <div class="page checkout-page" id="pageCheckout">
+
+        <div class="checkout-header">
+            <div class="checkout-header-inner">
+                <h1>Checkout</h1>
+                <div class="ck-steps">
+                    <div class="ck-step active" id="ckStep1" onclick="goStep(1)">
+                        <div class="ck-step-num" id="ckNum1">1</div>
+                        <span class="ck-step-label">Shipping</span>
+                    </div>
+                    <div class="ck-step-divider"></div>
+                    <div class="ck-step" id="ckStep2" onclick="goStep(2)">
+                        <div class="ck-step-num" id="ckNum2">2</div>
+                        <span class="ck-step-label">Payment</span>
+                    </div>
+                    <div class="ck-step-divider"></div>
+                    <div class="ck-step" id="ckStep3">
+                        <div class="ck-step-num" id="ckNum3">3</div>
+                        <span class="ck-step-label">Review</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="checkout-wrap">
+            <div>
+
+                <!-- Step 1: Shipping -->
+                <div class="ck-panel active" id="ckPanel1">
+                    <div class="section-card">
+                        <div class="section-card-header">
+                            <div class="section-card-icon">📦</div>
+                            <h3>Shipping Details</h3>
+                        </div>
+                        <div class="form-row" style="margin-bottom:14px;">
+                            <div class="form-group" style="margin:0;">
+                                <label class="form-label">First Name</label>
+                                <input class="form-input" type="text" id="ckFirst" placeholder="John">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label class="form-label">Last Name</label>
+                                <input class="form-input" type="text" id="ckLast" placeholder="Doe">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input class="form-input" type="email" id="ckEmail" placeholder="john@example.com">
+                            <div class="form-hint">Order confirmation will be sent here</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input class="form-input" type="tel" id="ckPhone" placeholder="+91 98765 43210">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Street Address</label>
+                            <input class="form-input" type="text" id="ckAddr" placeholder="Building name, street, area">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group" style="margin:0;">
+                                <label class="form-label">City</label>
+                                <input class="form-input" type="text" id="ckCity" placeholder="Mumbai">
+                            </div>
+                            <div class="form-group" style="margin:0;">
+                                <label class="form-label">PIN Code</label>
+                                <input class="form-input" type="text" id="ckPin" placeholder="400001" maxlength="6">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">State</label>
+                            <select class="form-input" id="ckState">
+                                <option value="" disabled selected>Select state</option>
+                                <option>Maharashtra</option>
+                                <option>Delhi</option>
+                                <option>Karnataka</option>
+                                <option>Tamil Nadu</option>
+                                <option>Gujarat</option>
+                                <option>Telangana</option>
+                                <option>West Bengal</option>
+                                <option>Rajasthan</option>
+                                <option>Uttar Pradesh</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="step-nav">
+                        <button class="btn btn-ghost" onclick="goShop('all')" style="padding:10px 18px;">← Back to
+                            Shop</button>
+                        <button class="btn btn-primary" onclick="nextStep(1)" style="padding:10px 24px;">Continue to
+                            Payment →</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Payment -->
+                <div class="ck-panel" id="ckPanel2">
+                    <div class="section-card">
+                        <div class="section-card-header">
+                            <div class="section-card-icon">💳</div>
+                            <h3>Payment Method</h3>
+                            <span class="section-card-sub">🔒 Secured &amp; encrypted</span>
+                        </div>
+
+                        <div class="payment-grid">
+                            <div class="pm-option selected" onclick="selectPM(this,'razorpay')">
+                                <div class="pm-radio"></div>
+                                <span class="pm-icon">🏦</span>
+                                <div class="pm-info">
+                                    <div class="pm-name">Razorpay</div>
+                                    <div class="pm-desc">Cards, UPI, Wallets</div>
+                                </div>
+                            </div>
+                            <div class="pm-option" onclick="selectPM(this,'cod')">
+                                <div class="pm-radio"></div>
+                                <span class="pm-icon">💵</span>
+                                <div class="pm-info">
+                                    <div class="pm-name">Cash on Delivery</div>
+                                    <div class="pm-desc">Pay at your doorstep</div>
+                                </div>
+                            </div>
+                            <div class="pm-option" onclick="selectPM(this,'upi')">
+                                <div class="pm-radio"></div>
+                                <span class="pm-icon">📱</span>
+                                <div class="pm-info">
+                                    <div class="pm-name">UPI</div>
+                                    <div class="pm-desc">GPay, PhonePe, Paytm</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pm-fields" id="upiDetails">
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label">Pay to UPI ID</label>
+                                <div class="upi-id">7774034616@slc</div>
+                                <img src="https://image2url.com/r2/default/images/1771852641367-1d91d00a-8faf-4743-acb9-87a130e45da8.png"
+                                    alt="UPI QR Code" class="upi-qr" id="upiQrImg">
+                                <div class="form-hint">Scan the QR code or pay to the UPI ID above.</div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="step-nav">
+                        <button class="btn btn-ghost" onclick="goStep(1)" style="padding:10px 18px;">← Back</button>
+                        <button class="btn btn-primary" onclick="nextStep(2)" style="padding:10px 24px;">Review Order
+                            →</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Review -->
+                <div class="ck-panel" id="ckPanel3">
+                    <div class="section-card">
+                        <div class="section-card-header">
+                            <div class="section-card-icon">✅</div>
+                            <h3>Review Your Order</h3>
+                        </div>
+                        <div id="reviewShipping" style="margin-bottom:18px;"></div>
+                        <div style="height:1px;background:var(--border);margin-bottom:18px;"></div>
+                        <div id="reviewPayment"></div>
+                    </div>
+                    <div class="step-nav">
+                        <button class="btn btn-ghost" onclick="goStep(2)" style="padding:10px 18px;">← Back</button>
+                        <button class="btn btn-primary" id="placeBtn" onclick="placeOrder()"
+                            style="padding:10px 28px;">Place Order</button>
+                    </div>
+                </div>
+
+            </div><!-- /left -->
+
+            <!-- Order Summary -->
+            <div class="order-box">
+                <div class="order-box-title">Order Summary</div>
+                <div id="orderItems"></div>
+                <div class="order-divider"></div>
+                <div class="coupon-wrap">
+                    <input class="coupon-input" type="text" id="couponInput" placeholder="Promo code">
+                    <button class="coupon-btn" onclick="applyCoupon()">Apply</button>
+                </div>
+                <div class="coupon-success" id="couponSuccess">🎉 NEXUS10 applied — 10% off!</div>
+                <div class="order-divider"></div>
+                <div class="order-line"><span>Subtotal</span><span id="ckSubtotal">₹0</span></div>
+                <div class="order-line free"><span>Shipping</span><span>Free</span></div>
+                <div class="order-line" id="discountLine" style="display:none;">
+                    <span>Discount (10%)</span>
+                    <span id="ckDiscount" style="color:var(--green);"></span>
+                </div>
+                <div class="order-line"><span>GST (18%)</span><span id="ckTax">₹0</span></div>
+                <div class="order-line"><span>Platform Fee</span><span id="ckFee">₹0</span></div>
+                <div class="order-line total"><span>Total</span><span id="ckTotal">₹0</span></div>
+                <div class="trust-row">
+                    <span class="trust-pill">🔒 SSL</span>
+                    <span class="trust-pill">✓ PCI</span>
+                    <span class="trust-pill">🛡 Fraud Protection</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════
+     SUCCESS PAGE
+═══════════════════════════════════════ -->
+    <div class="page" id="pageSuccess">
+        <div class="success-wrap">
+            <div class="success-card">
+                <div class="success-icon">✓</div>
+                <h2>Order Confirmed</h2>
+                <p>Your purchase is complete!<br>A confirmation email is on its way.</p>
+                <div class="order-id-pill" id="orderIdPill"></div>
+                <button class="btn btn-primary btn-full" style="padding:12px;" onclick="goHome()">Back to Store</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
