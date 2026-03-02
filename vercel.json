@@ -6,22 +6,10 @@
             "use": "@vercel/node"
         }
     ],
-    "routes": [
+    "rewrites": [
         {
-            "src": "/assets/(.*)",
-            "dest": "/assets/$1"
-        },
-        {
-            "src": "/(style\\.css|app\\.js|index\\.html)",
-            "dest": "/$1"
-        },
-        {
-            "src": "/api/(.*)",
-            "dest": "server.js"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "server.js"
+            "source": "/api/(.*)",
+            "destination": "/server.js"
         }
     ]
 }
