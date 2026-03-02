@@ -24,6 +24,13 @@ A modern gaming e-commerce store with high-quality product imagery and a robust 
 2. Open your browser and navigate to:
    [http://localhost:5000](http://localhost:5000)
 
+## Deployment
+### Vercel
+1. Connect your GitHub repository to Vercel.
+2. Add the following Environment Variable in Vercel settings:
+   - `MONGODB_URI`: Your MongoDB Atlas connection string (or other cloud MongoDB).
+3. Vercel will automatically detect `vercel.json` and deploy.
+
 ## Features
 - Dynamic product grid with real game art.
 - Interactive cart and checkout system.
